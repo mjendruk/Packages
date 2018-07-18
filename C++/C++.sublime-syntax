@@ -188,6 +188,7 @@ contexts:
         - include: template
         - match: (?=\S)
           set: global-modifier
+    - include: using-namespace
     - include: namespace
     - include: keywords-angle-brackets
     - match: '(?={{path_lookahead}}\s*<)'
@@ -253,7 +254,9 @@ contexts:
     - include: preprocessor-expressions
     - include: comments
     - include: case-default
+    - include: using-namespace
     - include: typedef
+    - include: using-alias
     - include: keywords-angle-brackets
     - include: keywords-parens
     - include: keywords
@@ -451,7 +454,7 @@ contexts:
           pop: true
         - include: expressions
 
-  namespace:
+  using-namespace:
     - match: '\b(using)\s+(namespace)\s+(?={{path_lookahead}})'
       captures:
         1: keyword.control.c++
@@ -460,6 +463,8 @@ contexts:
         - include: identifiers
         - match: ''
           pop: true
+
+  namespace:
     - match: '\b(namespace)\s+(?=({{path_lookahead}})?(?!\s*[;,]))'
       scope: meta.namespace.c++
       captures:
@@ -714,6 +719,18 @@ contexts:
       scope: punctuation.accessor.arrow.c++
       push: members-after-accessor-junction
 
+  
+
+  using-alias:
+    # consume keyword if followed by typename
+    - match: '\b(using)\b(?=\s+typename\b)'
+      captures:
+        1: keyword.control.c++
+    - match: '\b(using)\b\s+({{identifier}})(?!\s*(<|::))'
+      captures:
+        1: storage.type.c++
+        2: entity.name.type.using.c++
+        
   typedef:
     - match: \btypedef\b
       scope: storage.type.c++
@@ -1190,7 +1207,9 @@ contexts:
         - include: template
         - match: (?=\S)
           set: data-structures-modifier
+    - include: using-namespace
     - include: typedef
+    - include: using-alias
     - match: \b({{visibility_modifiers}})\s*(:)(?!:)
       captures:
         1: storage.modifier.c++
