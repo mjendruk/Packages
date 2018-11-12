@@ -1252,6 +1252,8 @@ contexts:
 
   data-structures-definition-common-end:
     - include: angle-brackets
+    - match: \bfinal\b
+      scope: storage.modifier.c++
     - match: ':'
       scope: punctuation.separator.c++
       push:
