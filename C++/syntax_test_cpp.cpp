@@ -727,15 +727,15 @@ void f()
 template<typename T> C<T> f(T t)
 {
     return C<T> { g<X<T>>(t) };
-    /*     ^ - variable.function */
-    /*          ^ punctuation.section.block.begin */
+    /*     ^ variable.function */
+    /*          ^ punctuation.section.group.begin */
 }
 
 template<typename T> C<X<T>> f(T t)
 {
     return C<X<T>> { g<X<T>>(t) };
-    /*     ^ - variable.function */
-    /*             ^ punctuation.section.block.begin */
+    /*     ^ variable.function */
+    /*             ^ punctuation.section.group.begin */
 }
 
 struct A { int foo; };
@@ -1216,7 +1216,8 @@ void FooBar :: baz(int a)
 }
 /* A comment. */ void FooBar :: baz(int a)
 /*                    ^^^^^^^^^^^^^^^^^^^^ meta.function */
-/*                    ^^^^^^^^^^^^^ entity.name.function */
+/*                    ^^^^^^^^^^^^^ meta.function.local-symbol */
+/*                              ^^^ entity.name.function */
 /*                           ^^ punctuation.accessor */
 /*                                 ^^^^^^^ meta.function.parameters meta.group */
 /*                                 ^ punctuation.section.group.begin */
@@ -1226,7 +1227,8 @@ void FooBar :: baz(int a)
 }
 // prevent leading comment from function recognition
 /**/ HRESULT A::b()
-/*           ^ meta.function entity.name.function */
+/*           ^ meta.function */
+/*              ^ entity.name.function */
 {
     return S_OK;
 }
