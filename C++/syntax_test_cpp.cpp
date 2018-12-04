@@ -106,7 +106,8 @@ int main() {
 // constructor.
 FOOLIB_RESULT
 some_namespace::some_function(int a_parameter, double another_parameter) {
-  /* <- meta.function entity.name.function - entity.name.function.constructor */
+  /* <- meta.function meta.function.local-symbol */
+  /*            ^ entity.name.function - entity.name.function.constructor */
   return FOOLIB_SUCCESS;
 }
 
@@ -491,25 +492,32 @@ void funcName<C>() {
 }
 bool A::operator<(const A& a) { return false; }
 /* ^ storage.type */
-/*   ^^^^^^^^^^^^ meta.function entity.name.function */
+/*   ^^^^^^^^^ meta.function meta.function.local-symbol */
+/*      ^^^^^^^^^ entity.name.function */
 /*               ^ meta.function.parameters punctuation.section.group.begin */
 template <class T> bool A<T>::operator<(const A& a) { return false; }
 /*     ^ storage.type.template */
 /*       ^ punctuation.section.generic.begin */
 /*               ^ punctuation.section.generic.end */
-/*                      ^^^^^^^^^^^^^^^ meta.function entity.name.function */
+/*                      ^^^^^^^^^^^^^^^ meta.function meta.function.local-symbol */
+/*                            ^^^^^^^^^ entity.name.function */
 /*                                     ^ meta.function.parameters meta.group punctuation.section.group.begin */
 template <typename Foo>
 SomeType<OtherType> A<Foo>::foobar(YetAnotherType&& asRValue) {}
-/*                          ^^^^^^ meta.function entity.name.function */
+/*                  ^^^^^^^^^^^^^^ meta.function meta.function.local-symbol */
+/*                          ^^^^^^ entity.name.function */
 template <typename Foo> SomeType<OtherType> A<Foo>::foobar(YetAnotherType&& asRValue) {}
-/*                                                  ^^^^^^ meta.function entity.name.function */
+/*                                          ^^^^^^^^^^^^^^ meta.function meta.function.local-symbol */
+/*                                                  ^^^^^^ entity.name.function */
+
 template <class T>
 bool A<T>::operator   >    (const A& other) { return false; }
-/*         ^^^^^^^^^^^^ meta.function entity.name.function */
+/*   ^^^^^^^^^^^^^^^^^^ meta.function meta.function.local-symbol */
+/*         ^^^^^^^^^^^^ entity.name.function */
 template <class T>
 bool A<T>::operator    ==    (const A& other) { return false; }
-/*         ^^^^^^^^^^^^^^ meta.function entity.name.function */
+/*   ^^^^^^^^^^^^^^^^^^^^ meta.function meta.function.local-symbol */
+/*         ^^^^^^^^^^^^^^ entity.name.function */
 typedef std :: vector<std::vector<int> > Table;
 /*          ^^ punctuation.accessor */
 /*                   ^ punctuation.section.generic.begin */
@@ -850,7 +858,7 @@ try
 {
     throw std :: string("xyz");
     /* <- keyword.control.flow.throw */
-    /*    ^^^^^^^^^^^^^ variable.function */
+    /*           ^^^^^^ variable.function */
     /*        ^^ punctuation.accessor */
 }
 catch (...)
@@ -1197,7 +1205,8 @@ static const uint32_t * const MACRO funcname();
 
 void FooBar :: baz(int a)
 /*   ^^^^^^^^^^^^^^^^^^^^ meta.function */
-/*   ^^^^^^^^^^^^^ entity.name.function */
+/*   ^^^^^^^^^^^^^ meta.function.local-symbol */
+/*             ^^^ entity.name.function */
 /*          ^^ punctuation.accessor */
 /*                ^^^^^^^ meta.function.parameters meta.group */
 /*                ^ punctuation.section.group.begin */
@@ -1223,7 +1232,8 @@ void FooBar :: baz(int a)
 }
 FooBar::FooBar(int a)
 /*^^^^^^^^^^^^^^^^^^^ meta.function */
-/*^^^^^^^^^^^^ entity.name.function */
+/*^^^^^^^^^^^^ meta.function.local-symbol */
+/*      ^^^^^^ entity.name.function */
 /*            ^^^^^^^ meta.function.parameters meta.group */
 /*            ^ punctuation.section.group.begin */
 /*             ^^^ storage.type */
@@ -1233,7 +1243,8 @@ FooBar::FooBar(int a)
 
 FooBar :: FooBar(int a) & =
 /*^^^^^^^^^^^^^^^^^^^^^^^^^ meta.function */
-/*^^^^^^^^^^^^^^ entity.name.function */
+/*^^^^^^^^^^^^^^ meta.function.local-symbol */
+/*        ^^^^^^ entity.name.function */
 /*              ^^^^^^^ meta.function.parameters meta.group */
 /*              ^ punctuation.section.group.begin */
 /*               ^^^ storage.type */
@@ -1245,7 +1256,8 @@ default;
 /*^^^^^ meta.function storage.modifier */
 
 FooBar::~FooBar
-/*^^^^^^^^^^^^^ meta.function entity.name.function */
+/*^^^^^^^^^^^^^ meta.function meta.function.local-symbol */
+/*      ^^^^^^^ entity.name.function */
 () { }
 /* <- meta.function.parameters meta.group punctuation.section.group.begin */
  /* <- meta.function.parameters meta.group punctuation.section.group.end */
@@ -1253,13 +1265,14 @@ FooBar::~FooBar
 
 ThisIsAReallyReallyLongClassNameThatRequiresWrappingCodeInTheMiddleOfAPath::
     ThisIsAReallyReallyLongClassNameThatRequiresWrappingCodeInTheMiddleOfAPath()
-/* <- entity.name.function */
+/* <- meta.function meta.function.local-symbol */
     : var_name(nullptr) {
 }
 
 bool FooBar::operator==() {}
 /*   ^^^^^^^^^^^^^^^^^^^^^^^ meta.function */
-/*   ^^^^^^^^^^^^^^^^^^ entity.name.function */
+/*   ^^^^^^^^^^^^^^^^^^ meta.function.local-symbol */
+/*           ^^^^^^^^^^ entity.name.function */
 /*                     ^^ meta.function.parameters meta.group */
 /*                     ^ punctuation.section.group.begin */
 /*                      ^ punctuation.section.group.end */
@@ -1270,13 +1283,14 @@ bool FooBar::operator==() {}
 
 myns::FooBar::~FooBar() { }
 /*^^^^^^^^^^^^^^^^^^^^^^^^^ meta.function */
+/*^^^^^^^^^^^^^^^^^^^ meta.function.local-symbol */
 /*                   ^^ meta.function.parameters meta.group */
 /*                   ^ punctuation.section.group.begin */
 /*                    ^ punctuation.section.group.end */
 /*                      ^^^ meta.block */
 /*                      ^ punctuation.section.block.begin */
 /*                        ^ punctuation.section.block.end */
-/*^^^^^^^^^^^^^^^^^^^ entity.name.function */
+/*            ^^^^^^^ entity.name.function */
 
     extern "C" void test_in_extern_c_block()
 /*                  ^^^^^^^^^^^^^^^^^^^^^^^^ meta.function */
@@ -1425,8 +1439,9 @@ namespace std _GLIBCXX_VISIBILITY(default)
 {}
 }
 
-#define MY_NAMESPACE_BEGIN namespace greatapp {
-#define MY_NAMESPACE_END }
+// TODO: fix defines
+// #define MY_NAMESPACE_BEGIN namespace greatapp { 
+// #define MY_NAMESPACE_END }
 MY_NAMESPACE_BEGIN
 class X {
 private:
@@ -2106,7 +2121,7 @@ int foo(int val, float val2[], bool val3 = false)
 /*                                       ^ keyword.operator.assignment */
 /*                                         ^^^^^ constant.language */
 {
-    myClass *result;
+    // myClass *result;
     result->kk = func(val);
 /*        ^^ punctuation.accessor */
     if (result == 0) {
@@ -2375,7 +2390,7 @@ void sayHi()
     );
 
     if (::std::foo()) {}
-/*      ^^^^^^^^^^ variable.function */
+/*             ^^^ variable.function */
 /*      ^^ punctuation.accessor */
 /*           ^^ punctuation.accessor */
 

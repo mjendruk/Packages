@@ -263,7 +263,6 @@ contexts:
     - include: comments
     - include: case-default
     - include: using-namespace
-    - include: namespace
     - include: typedef
     - include: using-alias
     - include: keywords-angle-brackets
@@ -834,7 +833,7 @@ contexts:
     # Constructors and destructors don't have a type
     - match: '(?={{path_lookahead}}\s*(?:{{generic_lookahead}})?\s*::\s*{{identifier}}\s*\()'
       set:
-        - meta_content_scope: meta.function.c++
+        - meta_content_scope: meta.function.c++ meta.function.local-symbol.c++
         - include: identifier-path-generic
         - match: '(?:(::)\s*)?({{identifier}})'
           captures:
@@ -842,9 +841,9 @@ contexts:
             2: entity.name.function.constructor.c++
         - match: '(?=[^\w\s])'
           set: function-definition-params
-    - match: '(?={{path_lookahead}}\s*(?:{{generic_lookahead}})?\s*::\s*~{{identifier}})'
+    - match: '(?={{path_lookahead}}\s*(?:{{generic_lookahead}})?\s*::\s*~{{identifier}}\s*(\(|$))'
       set:
-        - meta_content_scope: meta.function.c++
+        - meta_content_scope: meta.function.c++ meta.function.local-symbol.c++
         - include: identifier-path-generic
         - match: '(?:(::)\s*)?(~{{identifier}})'
           captures:
@@ -858,7 +857,7 @@ contexts:
     # since it doesn't seem most developers would create such a long typename.
     - match: '(?={{path_lookahead}}\s*(?:{{generic_lookahead}})?::\s*$)'
       set:
-        - meta_content_scope: meta.function.c++
+        - meta_content_scope: meta.function.c++ meta.function.local-symbol.c++
         - include: identifier-path-generic
         - match: '(::)\s*$'
           captures:
@@ -867,7 +866,6 @@ contexts:
           captures:
             1: punctuation.accessor.double-colon.c++
             2: entity.name.function.c++
-        - match: '~{{identifier}}'
         - match: '(?=[^\w\s])'
           set: function-definition-params
     - include: unique-strings
@@ -953,7 +951,7 @@ contexts:
     # Operator overloading
     - match: '(?=({{path_lookahead}}\s*(?:{{generic_lookahead}})?::\s*)?{{operator_method_name}}\s*(\(|$))'
       set:
-        - meta_content_scope: meta.function.c++
+        - meta_content_scope: meta.function.c++ meta.function.local-symbol.c++
         - include: identifier-path-generic
         - match: '(?:(::)\s*)?{{operator_method_name}}(?=\s*\()'
           scope: entity.name.function.c++
@@ -999,7 +997,7 @@ contexts:
       pop: true
 
   function-definition-params:
-    - meta_content_scope: meta.function.c++
+    - meta_content_scope: meta.function.c++ meta.function.local-symbol.c++
     - include: comments
     - match: '(?=\()'
       set:
