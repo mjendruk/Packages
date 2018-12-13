@@ -2035,6 +2035,16 @@ contexts:
       scope: punctuation.section.block.begin.c++
     - match: '\}'
       scope: punctuation.section.block.end.c++
+    # Captures the namespace macro idiom
+    - match: '\b(namespace)\s+(?={{path_lookahead}}\s*\{)'
+      scope: meta.namespace.c++
+      captures: 
+        1: keyword.control.c++
+      push:
+        - meta_content_scope: meta.namespace.c++ entity.name.namespace.c++
+        - include: identifiers
+        - match: '(?=\S)'
+          pop: true
     - include: expressions
 
   preprocessor-practical-workarounds:
