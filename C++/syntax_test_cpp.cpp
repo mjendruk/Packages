@@ -390,51 +390,6 @@ typedef struct Books {
 } Book;
 /*^ entity.name.type */
 
-using Alias = Foo;
-/* <- storage.type */
-/*    ^^^^^ entity.name.type.using */
-
-using Alias
-  = NewLineFoo;
-/*^ - entity.name */
-
-template <typename T>
-using TemplateAlias = Foo<T>;
-/*    ^^^^^^^^^^^^^ entity.name.type.using */
-
-using std::cout;
-/* <- keyword.control */
-/*    ^ - entity.name */
-
-using std::
-  cout;
-/*^ - entity.name */
-
-class MyClass : public SuperClass
-{
-    using This = MyClass;
-/*  ^ storage.type */
-/*        ^^^^ entity.name.type.using */
-
-    using MyInt
-/*  ^ storage.type */
-        = int32_t;
-
-    using SuperClass::SuperClass;
-/*  ^ keyword.control */
-/*        ^ - entity.name */
-};
-
-class MyClass : public CrtpClass<MyClass>
-{
-    using typename CrtpClass<MyClass>::PointerType;
-/*  ^ keyword.control */
-/*        ^ storage.modifier */ 
-    using CrtpClass<
-/*  ^ keyword.control */
-        MyClass>::method;
-};
-
 typedef struct Books Book;
 /*             ^ - entity.name.type.struct */
 /*                   ^ entity.name.type.typedef */
@@ -510,6 +465,18 @@ template <typename Foo> SomeType<OtherType> A<Foo>::foobar(YetAnotherType&& asRV
 /*                                          ^^^^^^^^^^^^^^ meta.function meta.function.local-symbol */
 /*                                                  ^^^^^^ entity.name.function */
 
+template <typename Foo> A<Foo>::A(YetAnotherType&& asRValue) {}
+/*                      ^^^^^^^^^ meta.function meta.function.local-symbol */
+/*                              ^ entity.name.function */
+
+template <typename Foo> A<Foo>::A(YetAnotherType&& asRValue) {}
+/*                      ^^^^^^^^^ meta.function meta.function.local-symbol */
+/*                              ^ entity.name.function.constructor */
+
+template <typename Foo> A<Foo>::~A(YetAnotherType&& asRValue) {}
+/*                      ^^^^^^^^^ meta.function meta.function.local-symbol */
+/*                              ^ entity.name.function.destructor */
+
 template <class T>
 bool A<T>::operator   >    (const A& other) { return false; }
 /*   ^^^^^^^^^^^^^^^^^^ meta.function meta.function.local-symbol */
@@ -518,6 +485,7 @@ template <class T>
 bool A<T>::operator    ==    (const A& other) { return false; }
 /*   ^^^^^^^^^^^^^^^^^^^^ meta.function meta.function.local-symbol */
 /*         ^^^^^^^^^^^^^^ entity.name.function */
+
 typedef std :: vector<std::vector<int> > Table;
 /*          ^^ punctuation.accessor */
 /*                   ^ punctuation.section.generic.begin */
@@ -727,15 +695,15 @@ void f()
 template<typename T> C<T> f(T t)
 {
     return C<T> { g<X<T>>(t) };
-    /*     ^ variable.function */
-    /*          ^ punctuation.section.group.begin */
+    /*     ^ - variable.function */
+    /*          ^ punctuation.section.block.begin */
 }
 
 template<typename T> C<X<T>> f(T t)
 {
     return C<X<T>> { g<X<T>>(t) };
-    /*     ^ variable.function */
-    /*             ^ punctuation.section.group.begin */
+    /*     ^ - variable.function */
+    /*             ^ punctuation.section.block.begin */
 }
 
 struct A { int foo; };
@@ -858,7 +826,7 @@ try
 {
     throw std :: string("xyz");
     /* <- keyword.control.flow.throw */
-    /*           ^^^^^^ variable.function */
+    /*    ^^^^^^^^^^^^^ variable.function */
     /*        ^^ punctuation.accessor */
 }
 catch (...)
@@ -1292,6 +1260,7 @@ myns::FooBar::~FooBar() { }
 /*                      ^^^ meta.block */
 /*                      ^ punctuation.section.block.begin */
 /*                        ^ punctuation.section.block.end */
+/*^^^^^^^^^^^^^^^^^^^ meta.function.local-symbol */
 /*            ^^^^^^^ entity.name.function */
 
     extern "C" void test_in_extern_c_block()
@@ -1385,14 +1354,6 @@ using namespace NAME __attribute__((visibility ("hidden")));
 /*                   ^ storage.modifier */
 /*                                               ^ string */
 
-void func() {
-    using namespace NAME __attribute__((visibility ("hidden")));
-/*  ^ keyword.control */
-/*        ^ keyword.control */
-/*                       ^ storage.modifier */
-/*                                                   ^ string */
-}
-
 using namespace myNameSpace;
 /* <- keyword.control */
 /*    ^ keyword.control */
@@ -1441,9 +1402,8 @@ namespace std _GLIBCXX_VISIBILITY(default)
 {}
 }
 
-// TODO: fix defines
-// #define MY_NAMESPACE_BEGIN namespace greatapp { 
-// #define MY_NAMESPACE_END }
+#define MY_NAMESPACE_BEGIN namespace greatapp {
+#define MY_NAMESPACE_END }
 MY_NAMESPACE_BEGIN
 class X {
 private:
@@ -2048,60 +2008,6 @@ template <class T> class Sample {
   }
 };
 
-class Namespace::MyClass MACRO1 MACRO2 : public SuperClass
-/*    ^^^^^^^^^^^^^^^^^^ entity.name.class */
-/*             ^^ punctuation.accessor */
-/*                       ^ - entity.name */
-{
-};
-
-struct Namespace::MyStruct
-/*     ^^^^^^^^^^^^^^^^^^^ entity.name.struct */
-/*              ^^ punctuation.accessor */
-{
-};
-
-union Namespace::MyUnion
-/*    ^^^^^^^^^^^^^^^^^^ entity.name.union */
-/*             ^^ punctuation.accessor */
-{
-};
-
-enum class Namespace::MyEnum
-/*         ^^^^^^^^^^^^^^^^^ entity.name.enum */
-/*                  ^^ punctuation.accessor */
-{
-};
-
-class Namespace::
-MyClass MACRO1 
-/* <- entity.name.class */
-/*      ^ - entity.name */
-{
-};
-
-struct Namespace::
-MyStruct MACRO1
-/* <- entity.name.struct */
-/*       ^ - entity.name */
-{
-};
-
-union Namespace::
-MyUnion MACRO1
-/* <- entity.name.union */
-/*      ^ - entity.name */
-{
-};
-
-enum class Namespace::
-MyEnum MACRO1
-/* <- entity.name.enum */
-/*     ^ - entity.name */
-{
-};
-
-
 /////////////////////////////////////////////
 // Test preprocessor branching and C blocks
 /////////////////////////////////////////////
@@ -2123,7 +2029,7 @@ int foo(int val, float val2[], bool val3 = false)
 /*                                       ^ keyword.operator.assignment */
 /*                                         ^^^^^ constant.language */
 {
-    // myClass *result;
+    myClass *result;
     result->kk = func(val);
 /*        ^^ punctuation.accessor */
     if (result == 0) {
@@ -2392,7 +2298,7 @@ void sayHi()
     );
 
     if (::std::foo()) {}
-/*             ^^^ variable.function */
+/*      ^^^^^^^^^^ variable.function */
 /*      ^^ punctuation.accessor */
 /*           ^^ punctuation.accessor */
 
@@ -2417,25 +2323,6 @@ void sayHi()
 /*         ^ constant.numeric */
 /*          ^ punctuation.section.generic.end */
 /*           ^^ meta.group */
-
-    ::myns::foo<int>();
-/*  ^^ punctuation.accessor.double-colon */
-/*        ^^ punctuation.accessor.double-colon */
-/*  ^^^^^^^^^^^^^^^^^^ meta.function-call */
-/*          ^^^ variable.function */
-/*              ^^^ storage.type */
-
-    myns::FooClass{42};
-/*      ^^ punctuation.accessor.double-colon */
-/*  ^^^^^^^^^^^^^^^^^^ meta.function-call */
-/*        ^^^^^^^^ variable.function */
-
-    ::myns::BarClass<int>{};
-/*  ^^ punctuation.accessor.double-colon */
-/*        ^^ punctuation.accessor.double-colon */
-/*  ^^^^^^^^^^^^^^^^^^^^^ meta.function-call */
-/*          ^^^^^^^^ variable.function */
-/*                   ^^^ storage.type */
 
     int a[5];
 /*       ^^^ meta.brackets */
