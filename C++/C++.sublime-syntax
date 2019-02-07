@@ -1273,6 +1273,8 @@ contexts:
     - include: angle-brackets
     - match: \bfinal\b
       scope: storage.modifier.c++
+    - match: \babstract\b
+      scope: storage.modifier.c++
     - match: ':'
       scope: punctuation.separator.c++
       push:
